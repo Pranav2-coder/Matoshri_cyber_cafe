@@ -442,7 +442,7 @@
 .hero-carousel {
   position: relative;
   width: 100%;
-  height: 420px;
+  height: clamp(340px, 85vw, 420px);
   overflow: hidden;
   background-color: var(--color-navy-dark);
 }
@@ -477,40 +477,89 @@
   position: relative;
   overflow: hidden;
   display: flex;
-  align-items: center;
+  align-items: flex-end;
 }
 
+@media (min-width: 768px) {
+  .carousel-slide {
+    align-items: center;
+  }
+}
+
+/* Ambient blurred backdrop for seamless uncropped mobile display */
+.carousel-slide-backdrop {
+  position: absolute;
+  inset: -20px;
+  background-size: cover;
+  background-position: center;
+  filter: blur(24px) brightness(0.35);
+  transform: scale(1.1);
+  z-index: 0;
+  pointer-events: none;
+}
+
+@media (min-width: 768px) {
+  .carousel-slide-backdrop {
+    display: none;
+  }
+}
+
+/* Main Banner Image:
+   On mobile, object-fit: contain ensures 100% of the image is shown without cutting any side!
+   On desktop (>=768px), object-fit: cover fills the widescreen hero area. */
 .carousel-slide-img {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
-  object-fit: cover;
-  object-position: center;
+  object-fit: contain;
+  object-position: center center;
+  z-index: 1;
+}
+
+@media (min-width: 768px) {
+  .carousel-slide-img {
+    object-fit: cover;
+  }
 }
 
 .carousel-overlay {
   position: absolute;
   inset: 0;
+  z-index: 2;
   background: linear-gradient(
-    to right,
-    rgba(22, 58, 95, 0.88) 0%,
-    rgba(22, 58, 95, 0.65) 60%,
-    rgba(22, 58, 95, 0.35) 100%
+    to top,
+    rgba(15, 30, 54, 0.95) 0%,
+    rgba(15, 30, 54, 0.72) 40%,
+    rgba(15, 30, 54, 0.15) 75%,
+    transparent 100%
   );
+}
+
+@media (min-width: 768px) {
+  .carousel-overlay {
+    background: linear-gradient(
+      to right,
+      rgba(22, 58, 95, 0.88) 0%,
+      rgba(22, 58, 95, 0.65) 60%,
+      rgba(22, 58, 95, 0.35) 100%
+    );
+  }
 }
 
 .carousel-content {
   position: relative;
-  z-index: 2;
-  padding: var(--space-8) var(--space-5);
+  z-index: 3;
+  padding: var(--space-4) var(--space-4) var(--space-8);
   max-width: 560px;
   color: var(--color-white);
+  width: 100%;
 }
 
 @media (min-width: 768px) {
   .carousel-content {
     padding: var(--space-12) var(--space-8);
+    width: auto;
   }
 }
 
@@ -522,22 +571,30 @@
   font-weight: 600;
   padding: 3px 10px;
   border-radius: var(--radius-full);
-  margin-bottom: var(--space-4);
+  margin-bottom: var(--space-2);
   letter-spacing: 0.04em;
   text-transform: uppercase;
 }
 
+@media (min-width: 768px) {
+  .carousel-label {
+    margin-bottom: var(--space-4);
+  }
+}
+
 .carousel-headline {
-  font-size: var(--font-size-2xl);
+  font-size: clamp(1.25rem, 5vw, 1.75rem);
   font-weight: 700;
   color: var(--color-white);
-  line-height: 1.2;
-  margin-bottom: var(--space-3);
+  line-height: 1.25;
+  margin-bottom: var(--space-2);
 }
 
 @media (min-width: 768px) {
   .carousel-headline {
     font-size: var(--font-size-3xl);
+    line-height: 1.2;
+    margin-bottom: var(--space-3);
   }
 }
 
@@ -548,10 +605,24 @@
 }
 
 .carousel-text {
-  font-size: var(--font-size-base);
+  font-size: var(--font-size-sm);
   color: rgba(255, 255, 255, 0.88);
-  margin-bottom: var(--space-6);
-  line-height: 1.6;
+  margin-bottom: var(--space-4);
+  line-height: 1.5;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+@media (min-width: 768px) {
+  .carousel-text {
+    font-size: var(--font-size-base);
+    margin-bottom: var(--space-6);
+    line-height: 1.6;
+    display: block;
+    -webkit-line-clamp: unset;
+  }
 }
 
 .carousel-actions {
@@ -560,36 +631,51 @@
   gap: var(--space-3);
 }
 
+@media (max-width: 767px) {
+  .carousel-actions .btn {
+    padding: 8px 18px;
+    font-size: var(--font-size-sm);
+  }
+}
+
 /* Carousel Controls */
 .carousel-btn {
   position: absolute;
-  top: 50%;
+  top: 38%;
   transform: translateY(-50%);
   z-index: 10;
-  background-color: rgba(255, 255, 255, 0.18);
-  border: 1px solid rgba(255, 255, 255, 0.3);
+  background-color: rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.35);
   border-radius: 50%;
   color: var(--color-white);
-  width: 44px;
-  height: 44px;
+  width: 36px;
+  height: 36px;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: background-color var(--transition-fast);
-  backdrop-filter: blur(4px);
+  transition: background-color var(--transition-fast), transform var(--transition-fast);
+  backdrop-filter: blur(6px);
+}
+
+@media (min-width: 768px) {
+  .carousel-btn {
+    top: 50%;
+    width: 44px;
+    height: 44px;
+  }
 }
 
 .carousel-btn:hover {
-  background-color: rgba(255, 255, 255, 0.32);
+  background-color: rgba(255, 255, 255, 0.35);
 }
 
 .carousel-btn-prev {
-  left: var(--space-3);
+  left: var(--space-2);
 }
 
 .carousel-btn-next {
-  right: var(--space-3);
+  right: var(--space-2);
 }
 
 @media (min-width: 768px) {

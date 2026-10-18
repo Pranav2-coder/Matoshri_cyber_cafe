@@ -69,6 +69,28 @@ export default function HeroCarousel() {
   const pause = () => setPaused(true);
   const resume = () => setPaused(false);
 
+  const touchStartX = useRef(0);
+  const touchEndX = useRef(0);
+
+  const handleTouchStart = (e) => {
+    touchStartX.current = e.touches[0].clientX;
+    touchEndX.current = e.touches[0].clientX;
+    pause();
+  };
+
+  const handleTouchMove = (e) => {
+    touchEndX.current = e.touches[0].clientX;
+  };
+
+  const handleTouchEnd = () => {
+    resume();
+    const diff = touchStartX.current - touchEndX.current;
+    if (Math.abs(diff) > 40) {
+      if (diff > 0) next();
+      else prev();
+    }
+  };
+
   return (
     <section
       className="hero-carousel"
@@ -77,6 +99,9 @@ export default function HeroCarousel() {
       onMouseLeave={resume}
       onFocus={pause}
       onBlur={resume}
+      onTouchStart={handleTouchStart}
+      onTouchMove={handleTouchMove}
+      onTouchEnd={handleTouchEnd}
     >
       {/* Slides Track */}
       <div
@@ -91,6 +116,12 @@ export default function HeroCarousel() {
             className="carousel-slide"
             aria-hidden={idx !== current}
           >
+            {/* Ambient backdrop for seamless mobile contain mode */}
+            <div
+              className="carousel-slide-backdrop"
+              style={{ backgroundImage: `url(${banner.image})` }}
+              aria-hidden="true"
+            />
             <img
               src={banner.image}
               alt={banner.imageAlt}
@@ -101,14 +132,16 @@ export default function HeroCarousel() {
             <div className="carousel-overlay" aria-hidden="true" />
             <div className="container">
               <div className="carousel-content">
-                <span className="carousel-label">{banner.label}</span>
-                <h1 className="carousel-headline">{banner.headline}</h1>
-                <p className="carousel-text">{banner.text}</p>
-                <div className="carousel-actions">
-                  <Link to={banner.ctaLink} className="btn btn-primary btn-lg">
-                    {banner.cta}
-                  </Link>
-                </div>
+                {banner.label && <span className="carousel-label">{banner.label}</span>}
+                {banner.headline && <h1 className="carousel-headline">{banner.headline}</h1>}
+                {banner.text && <p className="carousel-text">{banner.text}</p>}
+                {banner.cta && (
+                  <div className="carousel-actions">
+                    <Link to={banner.ctaLink} className="btn btn-primary btn-lg">
+                      {banner.cta}
+                    </Link>
+                  </div>
+                )}
               </div>
             </div>
           </div>
